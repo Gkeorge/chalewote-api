@@ -3,6 +3,7 @@ package app.domain.user.model;
 import lombok.*;
 
 import javax.persistence.*;
+import javax.validation.constraints.Pattern;
 
 @Embeddable
 @Builder
@@ -11,6 +12,8 @@ import javax.persistence.*;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserDetails {
 
+    @Pattern(regexp = "^([a-zA-Z0-9]{6,12})$",
+            message = "Invalid characters")
     private String firstName;
 
     private String lastName;
