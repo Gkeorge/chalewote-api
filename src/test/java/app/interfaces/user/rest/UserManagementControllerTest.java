@@ -117,7 +117,6 @@ public class UserManagementControllerTest {
         getContent(userId, status().isNotFound());
     }
 
-
     /**
      * Register a new user with valid details, registers user
      */
@@ -149,7 +148,6 @@ public class UserManagementControllerTest {
         signUpUser(new SignUpUser("gorkofi", "12334343"), status().isBadRequest());
     }
 
-
     /**
      * Update registered user with valid details, updates user
      */
@@ -165,7 +163,6 @@ public class UserManagementControllerTest {
         Mockito.verify(userRepository, times(1))
                 .updateUserDetails(any(UUID.class), any(UserDetails.class));
         verifyNoMoreInteractions(userRepository);
-
     }
 
     private User setupDetails(String firstName, String lastName) {
@@ -215,7 +212,6 @@ public class UserManagementControllerTest {
                 .andExpect(handler().methodName("deleteRegisteredUser"))
                 .andExpect(resultMatcher);
     }
-
 
     /**
      * Delete unregistered user, returns not found
