@@ -3,16 +3,20 @@ package app.domain.event.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
 
 @Embeddable
 @Getter
+@NoArgsConstructor
+@CheckEventDate(message = "Invalid dates")
 public class EventDetails {
 
-    //@NotBlank
+    @NotBlank
     private String title;
 
     //@NotNull
@@ -37,7 +41,7 @@ public class EventDetails {
     @JsonCreator
     public EventDetails(@JsonProperty("title") String title, @JsonProperty("eventDate") EventDate eventDate) {
         this.title = title;
-        this.description = description;
+        this.eventDate = eventDate;
     }
 
     private EventDetails(EventDetailBuilder eventDetailBuilder) {

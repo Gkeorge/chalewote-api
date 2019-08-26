@@ -3,8 +3,8 @@ package app.domain.event.model;
 
 import app.domain.user.model.User;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
@@ -12,7 +12,7 @@ import java.util.UUID;
 
 @Entity
 @Getter
-@NoArgsConstructor
+@Data
 public class Event {
 
     @Id

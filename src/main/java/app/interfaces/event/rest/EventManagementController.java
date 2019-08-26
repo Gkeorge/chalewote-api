@@ -61,8 +61,8 @@ public class EventManagementController {
     }
 
     @PostMapping("users/{userId}/events")
-    ResponseEntity<Resource<Event>> registerUser(@PathVariable UUID userId,
-                                                 @RequestBody @Valid EventDetails eventDetails) {
+    ResponseEntity<Resource<Event>> registerEvent(@PathVariable UUID userId,
+                                                  @RequestBody @Valid EventDetails eventDetails) {
         Event registeredEvent = eventService.registerEvent(userId, eventDetails);
         return ResponseEntity
                 .created(linkTo(methodOn(EventManagementController.class).getEventDetail(registeredEvent.getEventId())).toUri())

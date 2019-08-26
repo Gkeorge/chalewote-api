@@ -1,22 +1,27 @@
 package app.domain.event.model;
 
-import lombok.Value;
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
 import javax.validation.constraints.FutureOrPresent;
 import java.time.LocalDateTime;
 
 @Embeddable
-@Value
+@Getter
+@NoArgsConstructor
 public class EventDate {
 
     @FutureOrPresent
-    LocalDateTime startTime;
+    private LocalDateTime startTime;
 
     @FutureOrPresent
-    LocalDateTime endTime;
+    private LocalDateTime endTime;
 
-    public EventDate(LocalDateTime startTime, LocalDateTime endTime) {
+    @JsonCreator
+    public EventDate(@JsonProperty("startTime") LocalDateTime startTime, @JsonProperty("endTime") LocalDateTime endTime) {
         this.startTime = startTime;
         this.endTime = endTime;
     }
