@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(UserManagementController.class)
 @AutoConfigureRestDocs(outputDir = "target/snippets")
-@DisplayName("User Management Test :) 😱")
+@DisplayName("User Management Test 😱")
 public class UserManagementControllerTest {
 
     @MockBean
@@ -47,18 +47,10 @@ public class UserManagementControllerTest {
     private MockMvc mockMvc;
 
 
-    /**
-     * Get all registered users returns all registered users.
-     */
     @Test
     void getAllRegisteredUsers() {
     }
 
-    /**
-     * Get registered user returns registered user
-     *
-     * @throws Exception
-     */
     @Test
     void getRegisteredUserShouldReturnRegisteredUser() throws Exception {
         User user = setup();
@@ -99,11 +91,6 @@ public class UserManagementControllerTest {
                 .andExpect(resultMatcher);
     }
 
-    /**
-     * Get unregistered user returns a 404
-     *
-     * @throws Exception
-     */
     @Test
     void getUnRegisteredUserReturnsNotFound() throws Exception {
         UUID userId = UUID.randomUUID();
@@ -117,16 +104,15 @@ public class UserManagementControllerTest {
         getContent(userId, status().isNotFound());
     }
 
-    /**
-     * Register a new user with valid details, registers user
-     */
     @Test
     void registerUserWithValidDetailsShouldRegisterUser() throws Exception {
-        signUpUser(new SignUpUser("gorkofi@gmail.com", "12334343"), status().isCreated());
+        given(userRepository.signUpUser("gorkofi@gmail.com", "12334343")).willReturn(UUID.randomUUID());
+        ResultActions resultActions = signUpUser(new SignUpUser("gorkofi@gmail.com", "12334343"), status().isCreated());
+        resultActions.andExpect(header().exists("Location"));
     }
 
-    private void signUpUser(SignUpUser user, ResultMatcher resultMatcher) throws Exception {
-        this.mockMvc.perform(post("/users")
+    private ResultActions signUpUser(SignUpUser user, ResultMatcher resultMatcher) throws Exception {
+        return this.mockMvc.perform(post("/users")
                 .content(asJsonString(user))
                 .contentType(MediaType.APPLICATION_JSON_UTF8))
                 .andExpect(resultMatcher);
@@ -140,20 +126,14 @@ public class UserManagementControllerTest {
         }
     }
 
-    /**
-     * Register a new user with invalid details returns a bad request
-     */
     @Test
     void registerUserWithInValidDetailsReturnsBadRequest() throws Exception {
         signUpUser(new SignUpUser("gorkofi", "12334343"), status().isBadRequest());
     }
 
-    /**
-     * Update registered user with valid details, updates user
-     */
     @Test
     void updateRegisteredUserWithValidDetailsShouldUpdateUser() throws Exception {
-        User user = setupDetails("George", "Nanor");
+        User user = setupDetailsForUserUpdate("George", "Nanor");
         postContent(user.getUserId(), user.getUserDetails())
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON_UTF8))
@@ -165,7 +145,7 @@ public class UserManagementControllerTest {
         verifyNoMoreInteractions(userRepository);
     }
 
-    private User setupDetails(String firstName, String lastName) {
+    private User setupDetailsForUserUpdate(String firstName, String lastName) {
         UUID userId = UUID.randomUUID();
         UserDetails userDetails = UserDetails.builder().firstName(firstName).lastName(lastName).build();
         User user = User.builder().userId(userId).userDetails(userDetails).build();
@@ -189,15 +169,11 @@ public class UserManagementControllerTest {
      */
     @Test
     void updateRegisteredUserWithInvalidDetailsShouldReturnBadReqeust() throws Exception {
-        User user = setupDetails("@$%$@", "#@$#@$");
+        User user = setupDetailsForUserUpdate("@$%$@", "#@$#@$");
         postContent(user.getUserId(), user.getUserDetails())
                 .andExpect(status().isBadRequest());
     }
 
-
-    /**
-     * Delete registered user deletes user
-     */
     @Test
     void deleteRegisteredUserShouldDeleteUser() throws Exception {
         UUID userId = UUID.randomUUID();
@@ -213,10 +189,6 @@ public class UserManagementControllerTest {
                 .andExpect(resultMatcher);
     }
 
-    /**
-     * Delete unregistered user, returns not found
-     * Could be anything actually, 204, 200, 404 since delete is expected to be idempotent
-     */
     @Test
     void deleteUnRegisteredUserShouldReturnNotFound() throws Exception {
         UUID userId = UUID.randomUUID();

@@ -1,14 +1,14 @@
 package app;
 
+import app.domain.user.model.User;
+import app.infrastructure.user.persistence.jpa.JpaUserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.Ordered;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -22,10 +22,8 @@ public class Application implements CommandLineRunner {
         SpringApplication.run(Application.class, args);
     }
 
-    @Bean
-    public RestTemplate restTemplate() {
-        return new RestTemplateBuilder().build();
-    }
+    @Autowired
+    private JpaUserRepository jpaUserRepository;
 
     @Bean
     public FilterRegistrationBean<CorsFilter> simpleCorsFilter() {
@@ -42,9 +40,9 @@ public class Application implements CommandLineRunner {
     }
 
     @Override
-    public void run(String... args) throws Exception {
+    public void run(String... args) {
 
-//        System.out.println(jpaUserRepository.save(user));
+        System.out.println(jpaUserRepository.save(User.builder().emailAddress("gorkofi@gmail.com").password("1234643").build()));
 //        System.out.println(userService.registerUser(User.createUserWithExistingId("gore", "2343")).getUserId());
 //        System.out.println(userService.registerUser(User.createUserWithExistingId("rfsre", "2342")).getUserId());
 //        System.out.println(userService.registerUser(User.createUserWithExistingId("red", "2342")).getUserId());

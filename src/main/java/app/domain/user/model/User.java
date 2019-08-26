@@ -16,6 +16,7 @@ import java.util.UUID;
 @Getter
 @Builder
 @NoArgsConstructor
+@ToString
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public final class User {
 

@@ -1,24 +1,26 @@
 package app.domain.event.model;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
-import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
+import javax.validation.Valid;
 
 @Embeddable
 @Getter
 public class EventDetails {
 
-    @NotBlank
+    //@NotBlank
     private String title;
 
-    @NotNull
+    //@NotNull
     @Embedded
     private Location location;
 
     @Embedded
+    @Valid
     private EventDate eventDate;
 
     private String image;
@@ -32,7 +34,13 @@ public class EventDetails {
 
     private String eventTopic;
 
-    public EventDetails(EventDetailBuilder eventDetailBuilder) {
+    @JsonCreator
+    public EventDetails(@JsonProperty("title") String title, @JsonProperty("eventDate") EventDate eventDate) {
+        this.title = title;
+        this.description = description;
+    }
+
+    private EventDetails(EventDetailBuilder eventDetailBuilder) {
         this.title = eventDetailBuilder.title;
         this.location = eventDetailBuilder.location;
         this.eventDate = eventDetailBuilder.eventDate;

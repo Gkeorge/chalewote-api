@@ -18,18 +18,18 @@ public class Location {
     @Embedded
     private Address address;
 
-    Location createOnlineLocation() {
+    public Location createOnlineLocation() {
         this.type = LocationType.ONLINE;
         return new Location(type, new Address.AddressBuilder().build());
     }
 
-    Location createAddressLocation(Address address) {
+    public Location createAddressLocation(Address address) {
         this.type = LocationType.PLACE;
         this.address = address;
         return new Location(type, address);
     }
 
-    public static enum LocationType {
+    public enum LocationType {
         ONLINE,
         PLACE
     }

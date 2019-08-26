@@ -1,6 +1,5 @@
-package app.application.impl;
+package app.application;
 
-import app.application.EventService;
 import app.domain.event.model.Event;
 import app.domain.event.model.EventDetails;
 import app.domain.event.model.EventRepository;
