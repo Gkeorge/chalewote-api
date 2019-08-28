@@ -23,13 +23,14 @@ import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 
 @RestController
+@RequestMapping("/users")
 @RequiredArgsConstructor
 public class EventManagementController {
 
     private final EventResourceAssembler eventResourceAssembler;
     private final EventService eventService;
 
-    @GetMapping("/")
+    @GetMapping("/events")
     public ResponseEntity<PagedResources<EventDetails>> getRegisteredEvents(Pageable pageable,
                                                                             PagedResourcesAssembler pagedResourcesAssembler) {
 
@@ -38,12 +39,12 @@ public class EventManagementController {
                 HttpStatus.OK);
     }
 
-    @GetMapping("/{eventId}")
+    @GetMapping("/events/{eventId}")
     public Resource<Event> getEventDetail(@PathVariable UUID eventId) {
         return eventResourceAssembler.toResource(eventService.getRegisteredEvent(eventId));
     }
 
-    @GetMapping("/users/{userId}/events")
+    @GetMapping("/{userId}/events")
     public ResponseEntity<PagedResources<EventDTO>> getRegisteredEventsForLoginUser(@PathVariable UUID userId,
                                                                                     Pageable pageable,
                                                                                     PagedResourcesAssembler pagedResourcesAssembler) {
@@ -54,11 +55,11 @@ public class EventManagementController {
                 HttpStatus.OK);
     }
 
-    @GetMapping("/users/{userId}/events/{eventId}")
-    public Resource<Event> getRegisteredEventDetailForLoginUser(@PathVariable UUID userId,
-                                                                @PathVariable UUID eventId) {
-        return this.eventResourceAssembler.toResource(eventService.getRegisteredEventForUser(userId, eventId));
-    }
+//    @GetMapping("/users/{userId}/events/{eventId}")
+//    public Resource<Event> getRegisteredEventDetailForLoginUser(@PathVariable UUID userId,
+//                                                                @PathVariable UUID eventId) {
+//        return this.eventResourceAssembler.toResource(eventService.getRegisteredEventForUser(userId, eventId));
+//    }
 
     @PostMapping("users/{userId}/events")
     ResponseEntity<Resource<Event>> registerEvent(@PathVariable UUID userId,

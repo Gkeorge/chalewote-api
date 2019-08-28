@@ -1,8 +1,5 @@
 package app;
 
-import app.domain.user.model.User;
-import app.infrastructure.user.persistence.jpa.JpaUserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,8 +19,6 @@ public class Application implements CommandLineRunner {
         SpringApplication.run(Application.class, args);
     }
 
-    @Autowired
-    private JpaUserRepository jpaUserRepository;
 
     @Bean
     public FilterRegistrationBean<CorsFilter> simpleCorsFilter() {
@@ -42,7 +37,7 @@ public class Application implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-        System.out.println(jpaUserRepository.save(User.builder().emailAddress("gorkofi@gmail.com").password("1234643").build()));
+//        System.out.println(jpaUserRepository.save(User.builder().emailAddress("gorkofi@gmail.com").password("1234643").build()));
 //        System.out.println(userService.registerUser(User.createUserWithExistingId("gore", "2343")).getUserId());
 //        System.out.println(userService.registerUser(User.createUserWithExistingId("rfsre", "2342")).getUserId());
 //        System.out.println(userService.registerUser(User.createUserWithExistingId("red", "2342")).getUserId());

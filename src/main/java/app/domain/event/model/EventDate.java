@@ -26,9 +26,4 @@ public class EventDate {
         this.endTime = endTime;
     }
 
-//    public static EventDate createEventDate(LocalDateTime startTime, LocalDateTime endTime) {
-//        if (endTime.isBefore(startTime))
-//            throw new IllegalStateException("End date is before Start date");
-//        return new EventDate(startTime, endTime);
-//    }
 }
