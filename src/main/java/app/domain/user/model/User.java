@@ -21,6 +21,11 @@ import java.util.UUID;
 public final class User {
 
 
+    @NotBlank
+    @Email
+    @Column(name = "email_address", unique = true)
+    private String emailAddress;
+
     @Id
     @GeneratedValue(generator = "UUID")
     @GenericGenerator(
@@ -29,11 +34,6 @@ public final class User {
     )
     @Column(name = "id", updatable = false, nullable = false)
     private UUID userId;
-
-    @NotBlank
-    @Email
-    @Column(name = "email_address", unique = true)
-    String emailAddress;
 
     @JsonIgnore
     @NotBlank
@@ -44,7 +44,6 @@ public final class User {
     @Embedded
     private UserDetails userDetails;
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -54,7 +53,6 @@ public final class User {
 
         return userId != null ? userId.equals(user.userId) : user.userId == null;
     }
-
 
     @Override
     public int hashCode() {

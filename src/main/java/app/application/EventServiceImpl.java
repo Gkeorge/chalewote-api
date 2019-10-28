@@ -3,7 +3,6 @@ package app.application;
 import app.domain.event.model.Event;
 import app.domain.event.model.EventDetails;
 import app.domain.event.model.EventRepository;
-import app.domain.user.model.User;
 import app.domain.user.model.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -11,6 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.UUID;
 
 @Service
@@ -37,24 +37,21 @@ class EventServiceImpl implements EventService {
     }
 
     @Override
-    public Event getRegisteredEventForUser(UUID userId, UUID eventId) {
-        return eventRepository.getEventForUser(userId, eventId);
-    }
-
-    @Override
     public Event registerEvent(UUID userId, EventDetails eventDetails) {
-        User user = userRepository.loadUserByUserId(userId);
-        return eventRepository.addEvent(user, eventDetails);
+        return eventRepository.addEvent(Event.createEvent(userRepository.loadUserByUserId(userId), eventDetails));
     }
 
     @Override
     public Event updateRegisteredEvent(UUID userId, UUID eventId, EventDetails eventDetails) {
-        User user = userRepository.loadUserByUserId(userId);
-        return eventRepository.updateRegisteredEvent(user, eventId, eventDetails);
+        return eventRepository.updateRegisteredEvent(Event.createEvent(userRepository.loadUserByUserId(userId), eventId, eventDetails));
     }
 
     @Override
     public void deleteRegisteredEvent(UUID eventId) {
-        eventRepository.deleteEvent(eventId);
+        Event event = eventRepository.getEvent(eventId);
+        if (event != null)
+            eventRepository.deleteEvent(eventId);
+        else
+            throw new EntityNotFoundException("Event not found for ID: " + eventId);
     }
 }

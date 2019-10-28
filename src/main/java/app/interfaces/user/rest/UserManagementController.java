@@ -14,6 +14,7 @@ import org.springframework.hateoas.Resource;
 import org.springframework.hateoas.ResourceSupport;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -31,7 +32,7 @@ public class UserManagementController {
     private final UserRepository userRepository;
     private final UserResourceAssembler userResourceAssembler;
 
-    @GetMapping
+    @GetMapping(produces = MediaType.APPLICATION_JSON_UTF8_VALUE)
     public ResponseEntity<PagedResources<UserDetails>> getAllRegisteredUsers(Pageable pageable,
                                                                              PagedResourcesAssembler pagedResourcesAssembler) {
         Page<User> users = userRepository.findAll(pageable);
@@ -39,11 +40,9 @@ public class UserManagementController {
                 HttpStatus.OK);
     }
 
-
     @GetMapping("/{userId}")
     public Resource<User> getRegisteredUser(@PathVariable UUID userId) {
-        User user = userRepository.loadUserByUserId(userId);
-        return this.userResourceAssembler.toResource(user);
+        return this.userResourceAssembler.toResource(userRepository.loadUserByUserId(userId));
     }
 
     @PostMapping
@@ -76,6 +75,5 @@ public class UserManagementController {
         }
         return ResponseEntity.ok(false);
     }
-
 
 }

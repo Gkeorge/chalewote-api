@@ -1,9 +1,7 @@
 package app.infrastructure.event.persistence.jpa;
 
 import app.domain.event.model.Event;
-import app.domain.event.model.EventDetails;
 import app.domain.event.model.EventRepository;
-import app.domain.user.model.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -26,24 +24,23 @@ class DefaultEventRepository implements EventRepository {
     }
 
     @Override
-    public Event addEvent(User user, EventDetails eventDetails) {
-        return jpaEventRepository.save(Event.createEvent(user, eventDetails));
+    public Event addEvent(Event event) {
+        return jpaEventRepository.save(event);
     }
 
     @Override
-    public Event updateRegisteredEvent(User user, UUID eventID, EventDetails eventDetails) {
-        return jpaEventRepository.save(Event.createEvent(user, eventID, eventDetails));
+    public Event updateRegisteredEvent(Event event) {
+        boolean present = jpaEventRepository.findById(event.getEventId())
+                .isPresent();
+        if (present)
+            return jpaEventRepository.save(event);
+
+        throw new EntityNotFoundException("Evnet not found for ID: " + event.getEventId());
     }
 
     @Override
     public Event getEvent(UUID eventId) {
         return jpaEventRepository.findById(eventId)
-                .orElseThrow(() -> new EntityNotFoundException(""));
-    }
-
-    @Override
-    public Event getEventForUser(UUID userId, UUID eventId) {
-        return jpaEventRepository.findByUserIdAndEventId(userId, eventId)
                 .orElseThrow(() -> new EntityNotFoundException(""));
     }
 

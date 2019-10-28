@@ -9,6 +9,7 @@ import app.domain.user.model.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -18,6 +19,7 @@ import java.util.UUID;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertAll;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.then;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
 
@@ -33,7 +35,7 @@ class EventServiceTest {
     private EventService eventService;
 
     @BeforeEach
-    public void setup() {
+    void setup() {
         eventService = new EventServiceImpl(eventRepository, userRepository);
     }
 
@@ -69,33 +71,54 @@ class EventServiceTest {
 
     @Test
     void registerEvent() {
-        UUID userId = UUID.randomUUID();
-        User user = new User();
-        Event event = Event.createEvent(user,
-                new EventDetails.EventDetailBuilder("CIAS", new Location(Location.LocationType.ONLINE, null),
-                        null, "Test").build());
-        given(userRepository.loadUserByUserId(userId)).willReturn(user);
-        given(eventRepository.addEvent(user, event.getEventDetails())).willReturn(event);
+        User user = getUser();
 
-        Event registeredEvent = eventService.registerEvent(userId, event.getEventDetails());
+        ArgumentCaptor<UUID> uuidArgumentCaptor = ArgumentCaptor.forClass(UUID.class);
+
+        Event event = getEvent(user);
+
+        given(userRepository.loadUserByUserId(user.getUserId())).willReturn(user);
+        given(eventRepository.addEvent(event)).willReturn(event);
+
+        Event registeredEvent = eventService.registerEvent(user.getUserId(), event.getEventDetails());
+
+        then(userRepository).should().loadUserByUserId(uuidArgumentCaptor.capture());
+        then(eventRepository).should().addEvent(event);
+        then(eventRepository).shouldHaveNoMoreInteractions();
+        then(userRepository).shouldHaveNoMoreInteractions();
+
         assertAll("",
                 () -> assertThat(registeredEvent.getEventDetails().getTitle()).isEqualTo("CIAS"),
+                () -> assertThat(uuidArgumentCaptor.getValue().equals(user.getUserId())),
                 () -> assertThat(registeredEvent.getEventDetails().getDescription()).isEqualTo("Test"));
+    }
+
+    private Event getEvent(User user) {
+        return Event.createEvent(user,
+                    new EventDetails.EventDetailBuilder("CIAS", new Location(Location.LocationType.ONLINE, null),
+                            null, "Test").build());
+    }
+
+    private User getUser() {
+        return User.builder().emailAddress("gorkofi@gmail.com")
+                .password("123456").userId(UUID.randomUUID()).build();
     }
 
     @Test
     void updateRegisteredEvent() {
 
-        UUID userId = UUID.randomUUID();
         UUID eventId = UUID.randomUUID();
-        User user = new User();
-        Event event = Event.createEvent(user,
+        User user = getUser();
+
+        Event event = Event.createEvent(user, eventId,
                 new EventDetails.EventDetailBuilder("CIAS", new Location(Location.LocationType.ONLINE, null),
                         null, "Test").build());
-        given(userRepository.loadUserByUserId(userId)).willReturn(user);
-        given(eventRepository.updateRegisteredEvent(user, eventId, event.getEventDetails())).willReturn(event);
 
-        Event registeredEvent = eventService.updateRegisteredEvent(userId, eventId, event.getEventDetails());
+        given(userRepository.loadUserByUserId(user.getUserId())).willReturn(user);
+        given(eventRepository.updateRegisteredEvent(event)).willReturn(event);
+
+        Event registeredEvent = eventService.updateRegisteredEvent(user.getUserId(), eventId, event.getEventDetails());
+
         assertAll("",
                 () -> assertThat(registeredEvent.getEventDetails().getTitle()).isEqualTo("CIAS"),
                 () -> assertThat(registeredEvent.getEventDetails().getDescription()).isEqualTo("Test"));
@@ -104,4 +127,10 @@ class EventServiceTest {
     @Test
     void deleteRegisteredEvent() {
     }
+
 }
+
+//        Mockito.verify(userRepository)
+//                .loadUserByUserId(userId);
+//        verifyNoMoreInteractions(userRepository);
+//        verifyNoMoreInteractions(eventRepository);

@@ -3,6 +3,7 @@ package app.domain.event.model;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
@@ -11,23 +12,13 @@ import javax.persistence.Embedded;
 @AllArgsConstructor
 @Getter
 @Embeddable
+@NoArgsConstructor
 public class Location {
 
     private LocationType type;
 
     @Embedded
     private Address address;
-
-    public Location createOnlineLocation() {
-        this.type = LocationType.ONLINE;
-        return new Location(type, new Address.AddressBuilder().build());
-    }
-
-    public Location createAddressLocation(Address address) {
-        this.type = LocationType.PLACE;
-        this.address = address;
-        return new Location(type, address);
-    }
 
     public enum LocationType {
         ONLINE,

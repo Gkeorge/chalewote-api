@@ -6,6 +6,7 @@ import app.domain.event.model.EventDetails;
 import app.domain.event.model.Location;
 import app.domain.user.model.User;
 import app.interfaces.event.rest.assembler.EventResourceAssembler;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,11 +21,13 @@ import org.springframework.test.web.servlet.ResultMatcher;
 
 import java.util.UUID;
 
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.linkTo;
 import static org.springframework.hateoas.mvc.ControllerLinkBuilder.methodOn;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -95,7 +98,32 @@ class EventManagementControllerTest {
     }
 
     @Test
-    void registerEvent() {
+    void registerEvent() throws Exception {
+        UUID userId = UUID.randomUUID();
+        User user = User.builder().emailAddress("gorkofi@gmail.com").password("1234345").build();
+        EventDetails eventDetails = new EventDetails.EventDetailBuilder("CIAS",
+                new Location(Location.LocationType.ONLINE, null),
+                null, "Test").build();
+        Event event = Event.createEvent(user, eventDetails);
+
+        given(eventService.registerEvent(any(UUID.class), any(EventDetails.class))).willReturn(event);
+        ResultActions resultActions = register(userId, eventDetails, status().isCreated());
+        resultActions.andExpect(header().exists("Location"));
+    }
+
+    private ResultActions register(UUID userId, EventDetails eventDetails, ResultMatcher resultMatcher) throws Exception {
+        return this.mockMvc.perform(post("/users/{userId}/events", userId)
+                .content(asJsonString(eventDetails))
+                .contentType(MediaType.APPLICATION_JSON_UTF8))
+                .andExpect(resultMatcher);
+    }
+
+    private String asJsonString(final Object obj) {
+        try {
+            return new ObjectMapper().writeValueAsString(obj);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test

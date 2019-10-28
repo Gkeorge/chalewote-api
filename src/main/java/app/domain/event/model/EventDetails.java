@@ -13,7 +13,7 @@ import javax.validation.constraints.NotBlank;
 @Embeddable
 @Getter
 @NoArgsConstructor
-@CheckEventDate(message = "Invalid dates")
+@CheckEventDate
 public class EventDetails {
 
     @NotBlank

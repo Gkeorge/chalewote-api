@@ -19,6 +19,8 @@ public class Application implements CommandLineRunner {
         SpringApplication.run(Application.class, args);
     }
 
+    //@Autowired
+    //JpaUserRepository jpaUserRepository;
 
     @Bean
     public FilterRegistrationBean<CorsFilter> simpleCorsFilter() {
@@ -37,7 +39,7 @@ public class Application implements CommandLineRunner {
     @Override
     public void run(String... args) {
 
-//        System.out.println(jpaUserRepository.save(User.builder().emailAddress("gorkofi@gmail.com").password("1234643").build()));
+//       System.out.println(jpaUserRepository.save(User.builder().emailAddress("gorkofi@gmail.com").password("1234643").build()));
 //        System.out.println(userService.registerUser(User.createUserWithExistingId("gore", "2343")).getUserId());
 //        System.out.println(userService.registerUser(User.createUserWithExistingId("rfsre", "2342")).getUserId());
 //        System.out.println(userService.registerUser(User.createUserWithExistingId("red", "2342")).getUserId());

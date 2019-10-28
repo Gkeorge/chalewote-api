@@ -3,7 +3,6 @@ package app.domain.event.model;
 import javax.validation.ConstraintValidator;
 import javax.validation.ConstraintValidatorContext;
 
-//@Component
 public class ValidEventDateValidator implements ConstraintValidator<CheckEventDate, EventDetails> {
 
     @Override
@@ -15,12 +14,19 @@ public class ValidEventDateValidator implements ConstraintValidator<CheckEventDa
         if (eventDetails == null)
             return true;
 
-        boolean isValid = eventDetails.getEventDate().getStartTime().isBefore(eventDetails.getEventDate().getEndTime());
+        if (eventDetails.getEventDate() == null)
+            return true;
+
+        boolean isValid = false;
+
+        if (eventDetails.getEventDate().getStartTime() != null && eventDetails.getEventDate().getEndTime() != null)
+            isValid = eventDetails.getEventDate().getStartTime().isBefore(eventDetails.getEventDate().getEndTime());
 
         if (!isValid) {
             context.disableDefaultConstraintViolation();
             context
-                    .buildConstraintViolationWithTemplate("End date cannot be before start date")
+                    .buildConstraintViolationWithTemplate("Valid event dates are required. " +
+                            "Please check docs for info on valid dates")
                     .addPropertyNode("eventDate").addConstraintViolation();
         }
 

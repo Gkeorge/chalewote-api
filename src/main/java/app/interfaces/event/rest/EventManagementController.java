@@ -3,7 +3,6 @@ package app.interfaces.event.rest;
 import app.application.EventService;
 import app.domain.event.model.Event;
 import app.domain.event.model.EventDetails;
-import app.interfaces.event.dto.EventDTO;
 import app.interfaces.event.rest.assembler.EventResourceAssembler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -33,7 +32,6 @@ public class EventManagementController {
     @GetMapping("/events")
     public ResponseEntity<PagedResources<EventDetails>> getRegisteredEvents(Pageable pageable,
                                                                             PagedResourcesAssembler pagedResourcesAssembler) {
-
         Page<Event> events = eventService.getRegisteredEvents(pageable);
         return new ResponseEntity<>(pagedResourcesAssembler.toResource(events, eventResourceAssembler),
                 HttpStatus.OK);
@@ -45,23 +43,15 @@ public class EventManagementController {
     }
 
     @GetMapping("/{userId}/events")
-    public ResponseEntity<PagedResources<EventDTO>> getRegisteredEventsForLoginUser(@PathVariable UUID userId,
-                                                                                    Pageable pageable,
-                                                                                    PagedResourcesAssembler pagedResourcesAssembler) {
-
+    public ResponseEntity<PagedResources<Event>> getRegisteredEventsForLoginUser(@PathVariable UUID userId,
+                                                                                 Pageable pageable,
+                                                                                 PagedResourcesAssembler pagedResourcesAssembler) {
         Page<Event> eventsForUser = eventService.getRegisteredEventsForUser(userId, pageable);
-        Page<EventDTO> eventDTOPage = eventsForUser.map(EventDTO::toDTO);
-        return new ResponseEntity<>(pagedResourcesAssembler.toResource(eventDTOPage, eventResourceAssembler),
+        return new ResponseEntity<>(pagedResourcesAssembler.toResource(eventsForUser, eventResourceAssembler),
                 HttpStatus.OK);
     }
 
-//    @GetMapping("/users/{userId}/events/{eventId}")
-//    public Resource<Event> getRegisteredEventDetailForLoginUser(@PathVariable UUID userId,
-//                                                                @PathVariable UUID eventId) {
-//        return this.eventResourceAssembler.toResource(eventService.getRegisteredEventForUser(userId, eventId));
-//    }
-
-    @PostMapping("users/{userId}/events")
+    @PostMapping("/{userId}/events")
     ResponseEntity<Resource<Event>> registerEvent(@PathVariable UUID userId,
                                                   @RequestBody @Valid EventDetails eventDetails) {
         Event registeredEvent = eventService.registerEvent(userId, eventDetails);
@@ -70,12 +60,18 @@ public class EventManagementController {
                 .body(eventResourceAssembler.toResource(registeredEvent));
     }
 
-    @PutMapping("/users/{userId}/events/{eventId}")
+    @PutMapping("/{userId}/events/{eventId}")
     ResponseEntity<ResourceSupport> updateRegisteredUser(@PathVariable UUID userId,
                                                          @PathVariable UUID eventId,
                                                          @RequestBody @Valid EventDetails eventDetails) {
         Event event = eventService.updateRegisteredEvent(userId, eventId, eventDetails);
         return ResponseEntity.ok(eventResourceAssembler.toResource(event));
+    }
+
+    @DeleteMapping("/{userId}/events/{eventId}")
+    ResponseEntity<?> deleteRegisteredUser(@PathVariable UUID eventId) {
+        eventService.deleteRegisteredEvent(eventId);
+        return ResponseEntity.noContent().build();
     }
 
 }

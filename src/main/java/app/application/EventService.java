@@ -15,8 +15,6 @@ public interface EventService {
 
     Page<Event> getRegisteredEventsForUser(UUID userId, Pageable pageable);
 
-    Event getRegisteredEventForUser(UUID userId, UUID eventId);
-
     Event registerEvent(UUID userId, EventDetails eventDetails);
 
     Event updateRegisteredEvent(UUID userId, UUID eventId, EventDetails eventDetails);
